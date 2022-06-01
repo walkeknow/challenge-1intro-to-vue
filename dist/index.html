@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>CodePen - Challenge 1 - Intro to Vue</title>
-  
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CodePen - Challenge 1 - Intro to Vue</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div class="nav-bar"></div>
+    <!-- partial:index.partial.html -->
+    <div id="app">
+      <div class="product">
+        <div class="product-image">
+          <!-- NOTE v-bind:src directive dynamically binds an HTML attribute to an expression
+          :src is a shorthand for the same  -->
+          <a :href="memeUrl"><img :src="image" :alt="altText" /></a>
+        </div>
 
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<div id="app">
-  
-  <div class="product-image">
-    <img src="" />
-  </div>
+        <div class="product-info">
+          <h1>{{ product }}</h1>
+          <p>{{ description }}</p>
+        </div>
+      </div>
+    </div>
 
-  <div class="product-info">
-    <h1>{{ product }}</h1>
-    <p>{{ description }}</p>
-  </div>
-
-</div> 
-
- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
-<!-- partial -->
-  <script  src="./script.js"></script>
-
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+    <!-- partial -->
+    <script src="./main.js"></script>
+  </body>
 </html>
