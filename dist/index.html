@@ -9,13 +9,15 @@
     <div class="nav-bar"></div>
     <!-- partial:index.partial.html -->
     <div id="app">
+      <div class="cart">
+        <p>Cart({{cartItems}})</p>
+      </div>
       <div class="product">
         <div class="product-image">
           <!-- NOTE v-bind:src directive dynamically binds an HTML attribute to an expression
           :src is a shorthand for the same  -->
           <a :href="memeUrl"><img :src="image" :alt="altText" /></a>
         </div>
-
         <div class="product-info">
           <!-- NOTE v-show is more efficient when we are constantly showing and hiding 
             a dom element as it only changes the CSS display property  -->
@@ -28,11 +30,15 @@
           <ul>
             <li v-for="detail in details">{{ detail }}</li>
           </ul>
-          <p><b>Available Sizes</b></p>
+          <p><b>Available Variants</b></p>
           <!-- always use key for array of elements -->
           <span v-for="(variant, index) in variants" :key="variant.id">
-            <span v-if="index !== 0" >, </span><span>{{ variant.size }}</span>
+            <span v-if="index !== 0">, </span><span @mouseover="updateProduct(variant)">{{ variant.color }}</span>
           </span>
+          <br />
+          <!-- @click is shorthand for v-on -->
+          <button v-on:click="addToCart">Add to Cart</button>
+          <button v-on:click="removeFromCart">Remove Item</button>
         </div>
       </div>
     </div>

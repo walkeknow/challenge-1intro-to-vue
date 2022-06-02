@@ -9,7 +9,7 @@ var app = new Vue({
     product: "Socks",
     description: "Christmas Socks!",
     image: "./assets/vmSocks-green-onWhite.jpeg",
-    altText: "Green socks",
+    altText: "Green Socks",
     memeUrl:
       "https://res.cloudinary.com/practicaldev/image/fetch/s--TlyEacHW--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/vqe1zzbixk1bc6amhtk2.png",
     inventory: 11,
@@ -18,12 +18,29 @@ var app = new Vue({
     variants: [
       {
         id: 2234,
-        size: "Short"
+        color: "Green",
+        image: "./assets/vmSocks-green-onWhite.jpeg"
       },
       {
         id: 2235,
-        size: "Long"
+        color: "Blue",
+        image: "./assets/vmSocks-blue-onWhite.jpg"
+      },
+    ],
+    cartItems: 0,
+  },
+  methods: {
+    addToCart() {
+      this.cartItems += 1;
+    },
+    removeFromCart() {
+      if (this.cartItems > 0) {
+        this.cartItems -= 1;
       }
-    ]
+    },
+    updateProduct(variant) {
+      this.image = variant.image,
+      this.altText = variant.color + " Socks"
+    }
   },
 });
