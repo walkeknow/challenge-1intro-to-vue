@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>CodePen - Challenge 1 - Intro to Vue</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
   <body>
     <div class="nav-bar"></div>
@@ -17,8 +17,22 @@
         </div>
 
         <div class="product-info">
+          <!-- NOTE v-show is more efficient when we are constantly showing and hiding 
+            a dom element as it only changes the CSS display property  -->
+          <p v-if="inventory">In Stock</p>
+          <p v-else-if="inventory > 0 && inventory <=10">Almost Gone!</p>
+          <p v-if="onSale && inventory > 0">On Sale!</p>
+          <p v-else="inventory > 0 && inventory <=10">Out of Stock</p>
           <h1>{{ product }}</h1>
           <p>{{ description }}</p>
+          <ul>
+            <li v-for="detail in details">{{ detail }}</li>
+          </ul>
+          <p><b>Available Sizes</b></p>
+          <!-- always use key for array of elements -->
+          <span v-for="(variant, index) in variants" :key="variant.id">
+            <span v-if="index !== 0" >, </span><span>{{ variant.size }}</span>
+          </span>
         </div>
       </div>
     </div>
