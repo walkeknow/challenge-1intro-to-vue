@@ -21,7 +21,7 @@
         <div class="product-info">
           <!-- NOTE v-show is more efficient when we are constantly showing and hiding 
             a dom element as it only changes the CSS display property  -->
-          <p v-if="inventory">In Stock</p>
+          <p v-if="inventory" :class="{ outOfStock: !inStock }">In Stock</p>
           <p v-else-if="inventory > 0 && inventory <=10">Almost Gone!</p>
           <p v-if="onSale && inventory > 0">On Sale!</p>
           <p v-else="inventory > 0 && inventory <=10">Out of Stock</p>
@@ -32,13 +32,25 @@
           </ul>
           <p><b>Available Variants</b></p>
           <!-- always use key for array of elements -->
-          <span v-for="(variant, index) in variants" :key="variant.id">
-            <span v-if="index !== 0">, </span><span @mouseover="updateProduct(variant)">{{ variant.color }}</span>
-          </span>
-          <br />
+          <div
+            v-for="(variant, index) in variants"
+            :key="variant.id"
+            class="color-box"
+            :style="{ backgroundColor: variant.color }"
+            @mouseover="updateProduct(variant)"
+          ></div>
+
           <!-- @click is shorthand for v-on -->
-          <button v-on:click="addToCart">Add to Cart</button>
-          <button v-on:click="removeFromCart">Remove Item</button>
+          <button
+            v-on:click="addToCart"
+            :disabled="!inStock"
+            :class="{disabledButton: !inStock}"
+          >
+            <!-- The above syntax is called class binding, which means the presence of the active class 
+              disabledButton will be determined by the truthiness of its property -->
+            Add to Cart
+          </button>
+          <button @click="removeFromCart">Remove Item</button>
         </div>
       </div>
     </div>
