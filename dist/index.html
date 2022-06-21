@@ -9,52 +9,7 @@
     <div class="nav-bar"></div>
     <!-- partial:index.partial.html -->
     <div id="app">
-      <div class="cart">
-        <p>Cart({{cartItems}})</p>
-      </div>
-      <div class="product">
-        <div class="product-image">
-          <!-- NOTE v-bind:src directive dynamically binds an HTML attribute to an expression
-          :src is a shorthand for the same  -->
-          <a :href="memeUrl"><img :src="image" :alt="altText" /></a>
-        </div>
-        <div class="product-info">
-          <!-- NOTE v-show is more efficient when we are constantly showing and hiding 
-            a dom element as it only changes the CSS display property  -->
-          <p v-if="inStock">In Stock</p>
-          <p v-else>Out of Stock</p>
-          <p v-if="variantQuantity > 0 && variantQuantity <=10">Almost Gone!</p>
-          <span v-else-if="onSale && variantQuantity > 0">
-            {{featureProduct }}On Sale!
-          </span>
-          <h1>{{title}}</h1>
-          <p>{{ description }}</p>
-          <ul>
-            <li v-for="detail in details">{{ detail }}</li>
-          </ul>
-          <p><b>Available Variants</b></p>
-          <!-- always use key for array of elements -->
-          <div
-            v-for="(variant, index) in variants"
-            :key="variant.id"
-            class="color-box"
-            :style="{ backgroundColor: variant.color }"
-            @mouseover="updateProduct(index)"
-          ></div>
-
-          <!-- @click is shorthand for v-on -->
-          <!-- The above :class value uses class binding, which means the presence of the active class 
-              disabledButton will be determined by the truthiness of its property -->
-          <button
-            v-on:click="addToCart"
-            :disabled="!inStock"
-            :class="{disabledButton: !inStock}"
-          >
-            Add to Cart
-          </button>
-          <button @click="removeFromCart">Remove Item</button>
-        </div>
-      </div>
+        <product :premium="premium"></product>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
