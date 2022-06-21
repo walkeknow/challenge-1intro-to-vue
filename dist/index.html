@@ -21,11 +21,13 @@
         <div class="product-info">
           <!-- NOTE v-show is more efficient when we are constantly showing and hiding 
             a dom element as it only changes the CSS display property  -->
-          <p v-if="inventory" :class="{ outOfStock: !inStock }">In Stock</p>
-          <p v-else-if="inventory > 0 && inventory <=10">Almost Gone!</p>
-          <p v-if="onSale && inventory > 0">On Sale!</p>
-          <p v-else="inventory > 0 && inventory <=10">Out of Stock</p>
-          <h1>{{ product }}</h1>
+          <p v-if="inStock">In Stock</p>
+          <p v-else>Out of Stock</p>
+          <p v-if="variantQuantity > 0 && variantQuantity <=10">Almost Gone!</p>
+          <span v-else-if="onSale && variantQuantity > 0">
+            {{featureProduct }}On Sale!
+          </span>
+          <h1>{{title}}</h1>
           <p>{{ description }}</p>
           <ul>
             <li v-for="detail in details">{{ detail }}</li>
@@ -37,17 +39,17 @@
             :key="variant.id"
             class="color-box"
             :style="{ backgroundColor: variant.color }"
-            @mouseover="updateProduct(variant)"
+            @mouseover="updateProduct(index)"
           ></div>
 
           <!-- @click is shorthand for v-on -->
+          <!-- The above :class value uses class binding, which means the presence of the active class 
+              disabledButton will be determined by the truthiness of its property -->
           <button
             v-on:click="addToCart"
             :disabled="!inStock"
             :class="{disabledButton: !inStock}"
           >
-            <!-- The above syntax is called class binding, which means the presence of the active class 
-              disabledButton will be determined by the truthiness of its property -->
             Add to Cart
           </button>
           <button @click="removeFromCart">Remove Item</button>

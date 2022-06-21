@@ -8,28 +8,28 @@ var app = new Vue({
   data: {
     product: "Socks",
     description: "Christmas Socks!",
-    image: "./assets/vmSocks-green-onWhite.jpeg",
     altText: "Green Socks",
-    inStock: true,
-    disabledButton: 'disabledButton',
+    disabledButton: "disabledButton",
+    brand: "Vue Mastery",
+    selectedVariant: 0,
     memeUrl:
       "https://res.cloudinary.com/practicaldev/image/fetch/s--TlyEacHW--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/vqe1zzbixk1bc6amhtk2.png",
-    inventory: 11,
     onSale: true,
     details: ["80% cotton", "20 % polyester", "Gender-neutral"],
     variants: [
       {
         id: 2234,
         color: "Green",
-        image: "./assets/vmSocks-green-onWhite.jpeg"
+        varImage: "./assets/vmSocks-green-onWhite.jpeg",
       },
       {
         id: 2235,
         color: "Blue",
-        image: "./assets/vmSocks-blue-onWhite.jpg"
+        varImage: "./assets/vmSocks-blue-onWhite.jpg",
       },
     ],
     cartItems: 0,
+    variantQuantity: 10,
   },
   methods: {
     addToCart() {
@@ -40,9 +40,27 @@ var app = new Vue({
         this.cartItems -= 1;
       }
     },
-    updateProduct(variant) {
-      this.image = variant.image,
-      this.altText = variant.color + " Socks"
-    }
+    updateProduct(index) {
+      this.selectedVariant = index;
+    },
+  },
+  // computed is a key word for all computer variables
+  // a computed property changes every time its dependencies change, here they are brand and product
+  // It is more efficient to use a computed propery than a method (as lesser manual calls)
+  computed: {
+    title() {
+      return this.brand + " " + this.product;
+    },
+    image() {
+      return this.variants[this.selectedVariant].varImage;
+    },
+    inStock() {
+      return this.variantQuantity;
+    },
+    featureProduct() {
+      if (this.onSale) {
+        return this.brand + " " + this.product + " ";
+      }
+    },
   },
 });
