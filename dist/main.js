@@ -1,3 +1,87 @@
+Vue.component("product-review", {
+  template: `
+    <!-- NOTE .prevent is an event modifier -->
+    <form class="review-form" @submit.prevent="onSubmit">
+      <p v-if="errors.length">
+        <b>Please correct the error(s):</b>
+        <ul>
+          <li v-for="error in errors">{{ error }}</li>
+        </ul>
+      <p>
+        <label for="name">Name:</label>
+        <!-- REVIEW v-model enables 2-way data binding: HTML -> data and data -> HTML -->
+        <input id="name" v-model="name" required>
+      </p>
+      <p>
+        <label for="review">Review:</label>
+        <textarea id="review" v-model="review" required></textarea>
+      </p>
+      <p>
+        <label for="rating">Rating:</label>
+        <select id="rating" v-model.number="rating" required>
+        <option>5</option>
+        <option>4</option>
+        <option>3</option>
+        <option>2</option>
+        <option>1</option>
+      </select>
+      </p>
+      <p>
+        <fieldset>
+          <label for="recommendation">Would you recommend this product?</label>
+          <div>
+            <input type="radio" class="radio" id="yes" value="Yes" name="recommendation" v-model="recommendation" required>
+            <label for="yes">Yes</label>
+          </div>
+          <div>
+            <input type="radio" class="radio" id="no" value="No" name="recommendation" v-model="recommendation">
+            <label for="No">No</label>
+          </div>
+        </fieldset>
+      </p>
+      <p>
+        <input type="submit" value="Submit">
+      </p>
+    </form>
+  `,
+  data() {
+    return {
+      name: null,
+      review: null,
+      rating: null,
+      key: null,
+      recommendation: null,
+      errors: []
+    };
+  },
+  methods: {
+    onSubmit() {
+      if (this.name && this.review && this.rating) {
+        let productReview = {
+          name: this.name,
+          review: this.review,
+          rating: this.rating,
+          key: new Date(),
+          recommendation: this.recommendation
+        };
+        this.$emit("review-submitted", productReview);
+        this.name = null;
+        this.review = null;
+        this.rating = null;
+        this.key = null;
+        this.recommendation = null;
+      }
+      else if (!this.name) {
+        this.errors.push("Name required.")
+      }else if (!this.review) {
+        this.errors.push("Review required.")
+      }else if (!this.rating) {
+        this.errors.push("Rating required.")
+      }
+    },
+  },
+});
+
 Vue.component("product-details", {
   props: {
     details: {
@@ -56,6 +140,19 @@ Vue.component("product", {
             <button @click="removeFromCart">Remove Item</button>
           </div>
         </div>
+        <div>
+          <h2>Reviews</h2>
+          <p v-if="!reviews.length">There are no reviews yet</p>
+          <ul>
+            <li v-for="review in reviews">
+              <p><strong>{{ review.name }}</strong></p>
+              <p>{{ review.review }}</p>
+              <p>Rating: {{ review.rating }}</p>
+              <p>Would recommend the product: {{ review.recommendation }}</p>
+            </li>
+          </ul>
+        </div>
+        <product-review @review-submitted="addReview"></product-review>
     </div>
   `,
   data() {
@@ -83,6 +180,7 @@ Vue.component("product", {
         },
       ],
       variantQuantity: 10,
+      reviews: [],
     };
   },
   methods: {
@@ -95,7 +193,14 @@ Vue.component("product", {
     updateProduct(index) {
       this.selectedVariant = index;
     },
+    addReview(review) {
+      this.reviews.push(review);
+    },
   },
+  // Instead of a computed property, we can define the same function as a method.
+  // For the end result, the two approaches are indeed exactly the same. 
+  // REVIEW However, the difference is that computed properties are cached based on their reactive dependencies. 
+  // A computed property will only re-evaluate when some of its reactive dependencies have changed. 
   computed: {
     title() {
       return this.brand + " " + this.product;
