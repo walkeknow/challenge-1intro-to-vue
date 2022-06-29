@@ -21,9 +21,6 @@ Vue.component("product", {
   },
   template: `
       <div>
-        <div class="cart">
-          <p>Cart({{cartItems}})</p>
-        </div>
         <div class="product">
           <div class="product-image">
             <a :href="memeUrl"><img :src="image" :alt="altText" /></a>
@@ -85,18 +82,15 @@ Vue.component("product", {
           varImage: "./assets/vmSocks-blue-onWhite.jpg",
         },
       ],
-      cartItems: 0,
       variantQuantity: 10,
     };
   },
   methods: {
     addToCart() {
-      this.cartItems += 1;
+      this.$emit("add-to-cart", this.variants[this.selectedVariant].id);
     },
     removeFromCart() {
-      if (this.cartItems > 0) {
-        this.cartItems -= 1;
-      }
+      this.$emit("remove-from-cart", this.variants[this.selectedVariant].id);
     },
     updateProduct(index) {
       this.selectedVariant = index;
@@ -132,7 +126,22 @@ var app = new Vue({
   data() {
     return {
       premium: false,
+      cartItems: [],
     };
+  },
+  methods: {
+    addToMainCart(id) {
+      console.log(id);
+      this.cartItems.push(id);
+    },
+    removeFromMainCart(id) {
+      if (this.cartItems.length > 0) {
+        index = this.cartItems.indexOf(id);
+        if (index >= 0) {
+          this.cartItems.splice(index, 1);
+        }
+      }
+    },
   },
   // NOTE Vue is reactive
 });

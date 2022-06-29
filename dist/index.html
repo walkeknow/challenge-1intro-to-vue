@@ -9,7 +9,18 @@
     <div class="nav-bar"></div>
     <!-- partial:index.partial.html -->
     <div id="app">
-        <product :premium="premium"></product>
+      <div class="cart">
+        <p>Cart({{cartItems.length}})</p>
+      </div>
+
+      <!-- NOTE @add-to-cart (v-on:add-to-cart) is the event listener which runs when 
+        trigger: button is pressed in the product component, 
+        result: call updateCart method in the app Vue instance-->
+      <product
+        :premium="premium"
+        @add-to-cart="addToMainCart"
+        @remove-from-cart="removeFromMainCart"
+      ></product>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
