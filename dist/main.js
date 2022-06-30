@@ -1,3 +1,55 @@
+// REVIEW the global event bus is like a common store
+// Vuex should be the preferred way if data grows
+var eventBus = new Vue();
+
+Vue.component("product-tabs", {
+  props: {
+    reviews: {
+      type: Array,
+      required: true,
+    },
+    details: {
+      type: Array,
+      required: true,
+    },
+  },
+  template: `
+    <div>
+      <span class="tab" :class="{activeTab: selectedTab === tab}"  v-for="(tab, index) in tabs" :key="index" @click="selectedTab = tab">{{ tab }}
+      </span>
+      <div>
+          <div v-show="selectedTab === 'Show Reviews'">
+            <h2>Reviews</h2>
+            <p v-if="!reviews.length">There are no reviews yet</p>
+            <ul>
+              <li v-for="review in reviews">
+                <p><strong>{{ review.name }}</strong></p>
+                <p>{{ review.review }}</p>
+                <p>Rating: {{ review.rating }}</p>
+                <p>Would recommend the product: {{ review.recommendation }}</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <product-review v-show="selectedTab === 'Write a Review'"></product-review>
+        <p v-show="selectedTab === 'Shipping'">Shipping Cost: {{ shipping }}</p>
+        <product-details v-show="selectedTab === 'Product Details'" :details="details"></product-details>
+    </div>
+  `,
+  data() {
+    return {
+      selectedTab: "Show Reviews",
+      tabs: ["Show Reviews", "Write a Review", "Shipping", "Product Details"],
+      shipping: null,
+    };
+  },
+  mounted() {
+    eventBus.$on("shipping-cost", (cost) => {
+      this.shipping = cost;
+    });
+  },
+});
+
 Vue.component("product-review", {
   template: `
     <!-- NOTE .prevent is an event modifier -->
@@ -51,7 +103,7 @@ Vue.component("product-review", {
       rating: null,
       key: null,
       recommendation: null,
-      errors: []
+      errors: [],
     };
   },
   methods: {
@@ -62,21 +114,20 @@ Vue.component("product-review", {
           review: this.review,
           rating: this.rating,
           key: new Date(),
-          recommendation: this.recommendation
+          recommendation: this.recommendation,
         };
-        this.$emit("review-submitted", productReview);
+        eventBus.$emit("review-submitted", productReview);
         this.name = null;
         this.review = null;
         this.rating = null;
         this.key = null;
         this.recommendation = null;
-      }
-      else if (!this.name) {
-        this.errors.push("Name required.")
-      }else if (!this.review) {
-        this.errors.push("Review required.")
-      }else if (!this.rating) {
-        this.errors.push("Rating required.")
+      } else if (!this.name) {
+        this.errors.push("Name required.");
+      } else if (!this.review) {
+        this.errors.push("Review required.");
+      } else if (!this.rating) {
+        this.errors.push("Rating required.");
       }
     },
   },
@@ -117,10 +168,8 @@ Vue.component("product", {
               {{featureProduct }}On Sale!
             </span>
             <p>User is premium: {{ premium }}</p>
-            <p>Shipping: {{ shipping }}</p>
             <h1>{{title}}</h1>
             <p>{{ description }}</p>
-            <product-details :details="details"></product-details>
             <p><b>Available Variants</b></p>
             <!-- always use key for array of elements -->
             <div
@@ -140,19 +189,7 @@ Vue.component("product", {
             <button @click="removeFromCart">Remove Item</button>
           </div>
         </div>
-        <div>
-          <h2>Reviews</h2>
-          <p v-if="!reviews.length">There are no reviews yet</p>
-          <ul>
-            <li v-for="review in reviews">
-              <p><strong>{{ review.name }}</strong></p>
-              <p>{{ review.review }}</p>
-              <p>Rating: {{ review.rating }}</p>
-              <p>Would recommend the product: {{ review.recommendation }}</p>
-            </li>
-          </ul>
-        </div>
-        <product-review @review-submitted="addReview"></product-review>
+        <product-tabs :reviews="reviews" :details="details"></product-tabs>
     </div>
   `,
   data() {
@@ -193,14 +230,11 @@ Vue.component("product", {
     updateProduct(index) {
       this.selectedVariant = index;
     },
-    addReview(review) {
-      this.reviews.push(review);
-    },
   },
-  // Instead of a computed property, we can define the same function as a method.
-  // For the end result, the two approaches are indeed exactly the same. 
-  // REVIEW However, the difference is that computed properties are cached based on their reactive dependencies. 
-  // A computed property will only re-evaluate when some of its reactive dependencies have changed. 
+  //  REVIEW Instead of a computed property, we can define the same function as a method.
+  // For the end result, the two approaches are indeed exactly the same.
+  // However, the difference is that computed properties are cached based on their reactive dependencies.
+  // A computed property will only re-evaluate when some of its reactive dependencies have changed.
   computed: {
     title() {
       return this.brand + " " + this.product;
@@ -216,12 +250,19 @@ Vue.component("product", {
         return this.brand + " " + this.product + " ";
       }
     },
-    shipping() {
-      if (this.premium) {
-        return "Free";
-      }
-      return "$2.99";
-    },
+  },
+  mounted() {
+    // REVIEW eventBus.$on product component listens for reviews submitted in the event bus (like a selector)
+    eventBus.$on("review-submitted", (productReview) => {
+      this.reviews.push(productReview);
+    });
+
+    if (this.premium) {
+      // REVIEW eventBus.$emit modifies the store (like dispatch)
+      return eventBus.$emit("shipping-cost", "Free");
+    } else {
+      eventBus.$emit("shipping-cost", "$2.99");
+    }
   },
 });
 
